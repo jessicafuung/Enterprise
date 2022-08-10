@@ -29,7 +29,6 @@ class OrderService(
     // Create a new delivery
     fun registerOrder(newDeliveryInfo: NewDeliveryInfo): OrderEntity {
         val customer = registerCustomer(newDeliveryInfo)
-        //val items = getItems(newDeliveryInfo)
         val newOrder = OrderEntity(orderDelivery = newDeliveryInfo.deliveryDate, customerId = customer.id?.let {
             customerRepo.getReferenceById(
                 it

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
@@ -22,7 +23,6 @@ class FullSystemTest {
 
     @Test
     fun shouldGetAllAuthoritiesIntegrationTest(){
-
         val loggedInUser = mockMvc.post("/api/authentication") {
             contentType = APPLICATION_JSON
             content = "{\n" +
@@ -30,7 +30,6 @@ class FullSystemTest {
                     "      \"password\":\"pirate\"\n" +
                     "    }"
         }
-
             .andExpect { status { isOk() } }
             .andReturn()
 
@@ -38,10 +37,28 @@ class FullSystemTest {
         mockMvc.get("/api/users/all") {
             theCookie?.let { cookie(it) }
         }
-
             .andExpect { status { isOk() } }
             .andExpect { content { contentType(APPLICATION_JSON) } }
             .andExpect { jsonPath("$") {isArray() } }
+    }
 
+    @Test
+    fun shouldDeleteAnOrderByOrderId() {
+        val loggedInUser = mockMvc.post("/api/authentication") {
+            contentType = APPLICATION_JSON
+            content = "{\n" +
+                    "      \"username\":\"admin@admin.com\",\n" +
+                    "      \"password\":\"pirate\"\n" +
+                    "    }"
+        }
+            .andExpect { status { isOk() } }
+            .andReturn()
+
+        val theCookie = loggedInUser.response.getCookie("access_token")
+        mockMvc.delete("/api/delivery/delete/1") {
+            theCookie?.let { cookie(it) }
+        }
+            .andExpect { status { isOk() } }
+            .andReturn()
     }
 }
